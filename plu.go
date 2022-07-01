@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"log"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
@@ -25,8 +25,23 @@ type Item struct {
 }
 
 func main() {
-	dsn := GetDsn()
-	fmt.Println(dsn)
+	if len(os.Args) > 1 {
+		command := os.Args[1]
+		// if using create_config on command line
+		if command == "create_config" {
+			CreateConfig()
+			return
+		}
+	}
+
+	var dsn string
+	if setting, err := GetSetting(); err != nil {
+		log.Fatal(err)
+	} else {
+		dsn = setting.GetDsn()
+	}
+	// dsn := GetDsn()
+	// fmt.Println(dsn)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
@@ -34,7 +49,11 @@ func main() {
 
 	env := &Env{db: db}
 	router := gin.Default()
+	// router.Static("/", "./public/index.html")
 	router.GET("/item", env.getItem)
+	router.GET("/", func(c *gin.Context) {
+		c.File("./simple.html")
+	})
 
 	router.Run("localhost:8080")
 }

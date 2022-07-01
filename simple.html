@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Hello</title>
+</head>
+<body>
+  <header>
+    <h1>PLU GO Page</h1>
+  </header>
+  <main>
+    <p>This is a Gin Go Page</p>
+    <form id="form">
+      <input name="code"/>
+      <button type="submit">Go</button>
+    </form>
+    <div id="view"></div>
+  </main>
+  <script defer>
+    const form = document.getElementById("form");
+    const view = document.getElementById("view");
+    // console.log(view);
+    form.onsubmit = function (ev) {
+      ev.preventDefault();
+      const formData = new FormData(form);
+      const code = formData.get("code")
+      console.log(code);
+      view.innerHTML = `<p>loading for ${code}...</p>`;
+      const itemUrl = new window.URL('/item', window.location);
+      itemUrl.searchParams.append('code', code);
+      console.log('fetching', itemUrl);
+      fetch(itemUrl).then(function (response) {
+        return response.json();
+      }).then(function (item) {
+        console.log(item);
+        view.innerHTML = `<code>${JSON.stringify(item)}</code>`;
+      });
+    }
+  </script>
+</body>
+</html>
