@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -22,6 +23,12 @@ type Item struct {
 	KodePabrik  string
 	HargaNormal float64
 	HargaJual   float64
+}
+
+type PluResponse struct {
+	Item        Item     `json:"item"`
+	HargaGrosir []string `json:"hargaGrosir"`
+	HargaPromo  []string `json:"hargaPromo"`
 }
 
 func main() {
@@ -94,5 +101,13 @@ func (e *Env) getItem(c *gin.Context) {
 		},
 	}).Limit(1).Find(&item)
 
-	c.IndentedJSON(200, item)
+	result := PluResponse{
+		Item:        item,
+		HargaGrosir: make([]string, 0),
+		HargaPromo:  make([]string, 0),
+	}
+
+	fmt.Println(result)
+
+	c.IndentedJSON(200, result)
 }
