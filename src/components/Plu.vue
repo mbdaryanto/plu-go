@@ -2,6 +2,7 @@
 import { ref, reactive } from 'vue'
 import { getItem, PluResponseType } from './item'
 import axios from 'axios'
+import LabelValue from './LabelValue.vue';
 
 const code = ref("")
 const plu = ref<PluResponseType>({
@@ -20,6 +21,8 @@ const plu = ref<PluResponseType>({
   hargaPromo: [],
   hargaGrosir: [],
 })
+
+const nf = new Intl.NumberFormat("id-ID")
 // defineComponent({
 //   methods: {
 //     handleSubmit(ev) {
@@ -32,7 +35,11 @@ function handleSubmit(ev: Event) {
   // console.log({target: ev.target, currentTarget: ev.currentTarget})
   const formData = new FormData(ev.target as HTMLFormElement)
   // console.log({code: formData.get('code')})
-  getItem({ axios, code: formData.get('code') as string }).then(response => {
+  const code = formData.get('code') as string
+  if (!code) {
+    return
+  }
+  getItem({ axios, code }).then(response => {
     console.log(response)
     plu.value = response
   })
@@ -41,34 +48,44 @@ function handleSubmit(ev: Event) {
 </script>
 
 <template>
-  <h1>Cek Harga</h1>
-  <div class="container">
-    <div>
-      <form @submit.prevent="handleSubmit">
-        <input type="text" name="code" v-model="code"/>
-      </form>
-    </div>
-    <div class="grid">
-      <div>Nama</div><div>{{plu.item.Nama}}</div>
-      <div>Kode</div><div>{{plu.item.Kode}}</div>
-      <div>Barcode</div><div>{{plu.item.Barcode}}</div>
-      <div>Harga</div><div><del>{{plu.item.HargaNormal}}</del> {{plu.item.HargaJual}}</div>
+  <div class="p-8">
+    <h1 class="text-2xl font-bold mb-8 mt-4">Cek Harga</h1>
+    <div class="text-left">
+      <div class="">
+        <form class="" @submit.prevent="handleSubmit">
+          <div class="">
+            <label
+              for="barcode"
+              class="block text-sm font-medium text-gray-500"
+            >
+              Barcode
+            </label>
+            <input
+              type="text"
+              id="barcode"
+              name="code"
+              v-model="code"
+              autocomplete="barcode"
+              class="mt-1 text-2xl focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm border-gray-300 rounded-md border-2"
+            />
+          </div>
+        </form>
+      </div>
+      <div class="grid mt">
+        <LabelValue name="Kode">{{plu.item.Kode}}</LabelValue>
+        <LabelValue name="Barcode">{{plu.item.Barcode}}</LabelValue>
+        <LabelValue name="Nama">{{plu.item.Nama}}</LabelValue>
+        <LabelValue name="Harga">
+          <span v-if="plu.item.HargaJual !== 0">
+            <del v-if="plu.item.HargaNormal !== 0">{{nf.format(plu.item.HargaNormal)}}</del>
+            {{nf.format(plu.item.HargaJual)}}
+          </span>
+        </LabelValue>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  width: 100%;
-}
-.grid {
-  display: grid;
-  grid-template-columns: 200px 1fr;
-  max-width: 600px;
-  text-align: left;
-}
+
 </style>

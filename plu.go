@@ -107,7 +107,7 @@ func (e *Env) getItem(c *gin.Context) {
 		HargaPromo:  make([]string, 0),
 	}
 
-	fmt.Println(result)
+	fmt.Printf("response: %+v\n", result)
 
 	c.IndentedJSON(200, result)
 }

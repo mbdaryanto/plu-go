@@ -18,6 +18,7 @@ import Plu from './components/Plu.vue';
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin: 0;
+  /* margin-top: 60px; */
 }
 </style>
